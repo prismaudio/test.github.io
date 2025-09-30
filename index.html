@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISMAUDIO: DECOMPOSED CHAIN-OF-THOUGHTS AND MULTI-DIMENSIONAL REWARDS FOR VIDEO-TO-AUDIO GENERATION</title>
+    <style>
+        /* NEW LIGHT MODE / CYBER-TEAL PALETTE & STYLING */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+        
+        :root {
+            /* High-Contrast Light Mode / Cyber-Teal */
+            --primary-color: #008080; /* Deep Teal - Technical/Main Highlight */
+            --secondary-color: #FF4500; /* OrangeRed - Accent/Success/Highlight */
+            --text-color: #212121; /* Near Black Base Text */
+            --light-text-color: #6A6A6A; /* Muted Grey for Subtext */
+            --background-color: #FFFFFF; /* White Base */
+            --card-background: #F9F9F9; /* Very Light Card Base */
+            --border-radius: 8px; /* Sharper, modern corners */
+            --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.1); /* Standard soft shadow */
+            --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+            --light-tint: #EBF7F7; /* Subtle background for header/blocks (light teal tint) */
+            --primary-glow: none; /* No glow on light background for text, use shadow instead */
+            --border-color: #E0E0E0; /* Light border color */
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+        
+        .container {
+            width: 95%;
+            max-width: 1300px; /* Wider container */
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        /* TYPOGRAPHY */
+        h1 { 
+            font-family: 'Space Mono', monospace;
+            font-size: 4.5em; 
+            color: var(--primary-color); 
+            font-weight: 700; 
+            margin: 0; 
+            letter-spacing: 5px; 
+            text-shadow: 2px 2px 5px rgba(0, 128, 128, 0.3); /* Teal shadow for impact */
+        }
+        
+        h2 { 
+            font-family: 'Inter', sans-serif;
+            font-size: 2.8em; 
+            color: var(--text-color); 
+            font-weight: 800; 
+            margin-top: 60px; 
+            margin-bottom: 30px;
+            border-bottom: 4px solid var(--secondary-color); 
+            padding-bottom: 10px;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+        
+        h3 { 
+            font-size: 1.8em; 
+            color: var(--primary-color); 
+            font-weight: 600; 
+            margin-top: 40px; 
+            padding-bottom: 5px;
+            border-left: 5px solid var(--primary-color); 
+            padding-left: 15px;
+            text-transform: uppercase;
+        }
+        
+        .subtitle { 
+            font-family: 'Space Mono', monospace;
+            font-size: 1.3em; 
+            color: var(--light-text-color); 
+            font-weight: 400; 
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            padding: 60px 0 40px;
+            background: var(--light-tint); /* Light teal tint */
+            border-bottom: 2px solid var(--primary-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* ABSTRACT & SECTION LAYOUT */
+        p.abstract-text {
+            text-align: justify; 
+            max-width: 1000px; 
+            margin: 30px auto;
+            font-size: 1.1em;
+            color: var(--text-color);
+            padding: 30px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color); 
+            transition: box-shadow 0.5s;
+        }
+        p.abstract-text:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* ARCHITECTURE IMAGE */
+        #advantage img {
+            border: 2px solid var(--primary-color);
+            box-shadow: var(--shadow-light); /* Standard shadow instead of glow */
+        }
+        
+        /* DEMO CARD GRID */
+        .demo-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .demo-preview-card {
+            background: var(--card-background);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .demo-preview-card:hover {
+            transform: translateY(-8px) scale(1.02); 
+            box-shadow: var(--shadow-hover); 
+            border-color: var(--primary-color); 
+        }
+        
+        .preview-media {
+            width: 100%;
+            height: 140px; 
+            background-color: var(--light-tint); 
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            color: var(--primary-color);
+            border: 3px dashed var(--primary-color); 
+            box-shadow: inset 0 0 8px rgba(0, 128, 128, 0.2); /* Subtle teal inner shadow */
+        }
+        
+        .preview-media p {
+            margin: 0;
+            font-size: 1.1em;
+            text-shadow: none; /* No shadow on light background */
+        }
+        
+        .demo-preview-card > p {
+            font-size: 1.05em; 
+            font-weight: 700; 
+            color: var(--text-color);
+            margin-top: auto; 
+        }
+
+        /* --- ABLATION TABLE STYLES --- */
+        .results-section {
+            padding: 30px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-light);
+            margin-top: 40px;
+        }
+        
+        .demo-table-header {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr) !important;
+            gap: 15px;
+            background-color: var(--primary-color); 
+            color: white; /* White text on teal header */
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            padding: 15px 0;
+            border-radius: var(--border-radius);
+            margin-bottom: 0;
+            text-transform: uppercase;
+        }
+
+        .header-cell {
+            text-align: center;
+            padding: 5px;
+            font-size: 0.85em;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap; 
+        }
+
+        .header-cell:last-child {
+            border-right: none;
+        }
+
+        .demo-table-body {
+            grid-template-columns: repeat(5, 1fr) !important;
+            gap: 15px;
+            margin-top: 15px !important; 
+        }
+
+        .demo-table-body .demo-preview-card {
+            padding: 10px; 
+            border-radius: 6px;
+            box-shadow: none; 
+            border: 1px solid var(--border-color);
+            background-color: var(--background-color); 
+        }
+        
+        .demo-table-body .demo-preview-card:hover {
+            transform: none; 
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.2); /* Orange accent shadow */
+            border-color: var(--secondary-color);
+        }
+
+        .demo-table-body .preview-media {
+            height: 70px; 
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            border-width: 2px;
+        }
+        
+        /* FOOTER & DIVIDER */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 60px;
+            border-top: 1px solid var(--border-color);
+            color: var(--light-text-color);
+            font-size: 0.9em;
+            background-color: var(--light-tint); /* Light tint for footer */
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px dashed var(--primary-color); 
+            margin: 60px 0;
+            opacity: 0.6;
+        }
+
+        /* MODAL STYLES - Enhanced for Light Mode */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 10; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0, 0, 0, 0.7); /* Slightly lighter dark overlay */
+        }
+        
+        .modal-content {
+            background-color: var(--background-color);
+            margin: 5% auto; 
+            padding: 40px;
+            border: 2px solid var(--primary-color);
+            width: 80%; 
+            max-width: 1100px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 30px rgba(0, 128, 128, 0.3); /* Subtle teal shadow */
+            position: relative;
+        }
+        
+        .close-btn {
+            color: var(--light-text-color);
+            float: right;
+            font-size: 40px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        
+        .close-btn:hover,
+        .close-btn:focus {
+            color: var(--secondary-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .full-media-placeholder {
+            min-height: 100px;
+            background-color: #EFEFEF; /* Light grey for placeholders */
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Mono', monospace;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 15px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        .cot-box {
+            background-color: var(--light-tint); /* Light teal tint for CoT box */
+            padding: 30px; 
+            border-radius: var(--border-radius); 
+            border: 2px solid var(--secondary-color); 
+            margin-bottom: 40px;
+            box-shadow: 0 0 10px rgba(255, 69, 0, 0.1); /* Subtle orange shadow */
+        }
+        
+        .cot-box h3 {
+             color: var(--secondary-color);
+             border-left-color: var(--secondary-color);
+        }
+
+        .cot-box p {
+            font-style: italic; 
+            color: var(--text-color);
+            font-size: 1.05em;
+        }
+        
+        /* RESPONSIVE ADJUSTMENTS */
+        @media (max-width: 992px) {
+            h1 { font-size: 3.5em; letter-spacing: 2px; }
+            h2 { font-size: 2.2em; }
+            .demo-preview-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            .demo-table-header { display: none; }
+            .demo-table-body {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 15px;
+            }
+            .modal-content { width: 90%; margin: 10% auto; padding: 25px; }
+        }
+        @media (max-width: 576px) {
+            h1 { font-size: 2.5em; letter-spacing: 0; }
+            .subtitle { font-size: 1em; }
+            h2 { font-size: 1.6em; }
+            .demo-table-body {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px;
+            }
+            .modal-content { padding: 15px; }
+            .full-media-placeholder { min-height: 70px; font-size: 0.8em; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="demoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title" style="border-bottom: 4px solid var(--primary-color);">Full Case Study: Title Placeholder</h2>
+            
+            <div class="cot-box">
+                <h3 style="margin-top:0;">Decomposed Chain-of-Thought Analysis</h3>
+                <p id="modal-description">Description placeholder.</p>
+            </div>
+
+            <h3 style="border-left-color: var(--primary-color);">Comparison Media</h3>
+            <div class="demo-preview-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div id="media-1" class="full-media-placeholder"></div>
+                <div id="media-2" class="full-media-placeholder"></div>
+                <div id="media-3" class="full-media-placeholder"></div>
+                <div id="media-4" class="full-media-placeholder"></div>
+            </div>
+            
+        </div>
+    </div>
+    <header>
+        <div class="container">
+            <h1>PRISMAUDIO</h1>
+            <div class="subtitle">
+                Decomposed Chain-of-Thoughts and Multi-Dimensional Rewards for Video-to-Audio Generation
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <section id="abstract">
+            <h2>Abstract</h2>
+            <p class="abstract-text">
+                Video-to-Audio (V2A) generation requires balancing four critical perceptual dimensions: semantic consistency, audio-visual temporal synchrony, aesthetic quality, and spatial accuracy; yet existing methods suffer from objective entanglement that conflates competing goals in single loss functions and lack human preference alignment. We introduce PrismAudio, the first framework to integrate Reinforcement Learning into V2A generation with specialized Chain-of-Thought (CoT) planning. Our approach decomposes monolithic reasoning into four specialized CoT modules (Semantic, Temporal, Aesthetic, and Spatial CoT), each paired with targeted reward functions. This CoT-reward correspondence enables multidimensional RL optimization that guides the model to jointly generate better reasoning across all perspectives, solving the objective entanglement problem while preserving interpretability. To make this optimization computationally practical, we propose Fast-GRPO, which employs hybrid ODE-SDE sampling that dramatically reduces the training overhead compared to existing GRPO implementations. We also introduce AudioCanvas, a rigorous benchmark that is more distributionally balanced and covers more realistically diverse and challenging scenarios than existing datasets, with 300 single-event classes and 501 multi-event samples. Experimental results demonstrate that PrismAudio achieves state-of-the-art performance across all four perceptual dimensions on both the in-domain VGGSound test set and out-of-domain AudioCanvas benchmark. 
+            </p>
+        </section>
+        
+        <hr>
+
+        <section id="advantage">
+            <h2>The PRISMAUDIO Architecture</h2>
+            <img src="fig/fig2_model.png" alt="PrismAudio illustration" width="100%" style="max-width:1200px; display:block; margin:40px auto; border-radius: var(--border-radius); box-shadow: var(--shadow-light);" />
+        </section>
+
+        <hr>
+
+        <section id="simple demos">
+            <h2>Demos: Single-Event Scenarios</h2>
+            <p style="text-align: center; margin-bottom: 40px; color: var(--light-text-color); font-style: italic;">Click any card below to load the full high-fidelity comparison and Decomposed Chain-of-Thought analysis for that scene.</p>
+
+            <div class="demo-preview-grid">
+                <div class="demo-preview-card" onclick="openModal('case-01')">
+                    <div class="preview-media"><p>Case #01: Complex Activity</p></div>
+                    <p>Chopping and Sizzling</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-02')">
+                    <div class="preview-media"><p>Case #02: Precise Impact</p></div>
+                    <p>Hammering a Nail</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-03')">
+                    <div class="preview-media"><p>Case #03: Dual Events</p></div>
+                    <p>Car Horn + Rain</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-04')">
+                    <div class="preview-media"><p>Case #04: Ambient Noise</p></div>
+                    <p>Wind in the Forest</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-05')">
+                    <div class="preview-media"><p>Case #05: Water Splash</p></div>
+                    <p>Dog jumping in pool</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-06')">
+                    <div class="preview-media"><p>Case #06: Voice/Speech</p></div>
+                    <p>Person talking indoors</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-07')">
+                    <div class="preview-media"><p>Case #07: Mechanical Sound</p></div>
+                    <p>Clock ticking and chimes</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-08')">
+                    <div class="preview-media"><p>Case #08: Material Friction</p></div>
+                    <p>Dragging a wooden box</p>
+                </div>
+                </div>
+        </section>
+
+        <section id="hard demos">
+            <h2>Demos: Multi-Event Scenarios</h2>
+            <p style="text-align: center; margin-bottom: 40px; color: var(--light-text-color); font-style: italic;">Click any card below to load the full high-fidelity comparison and Decomposed Chain-of-Thought analysis for that scene.</p>
+
+            <div class="demo-preview-grid">
+                <div class="demo-preview-card" onclick="openModal('case-01')">
+                    <div class="preview-media"><p>Case #01: Complex Activity</p></div>
+                    <p>Chopping and Sizzling</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-02')">
+                    <div class="preview-media"><p>Case #02: Precise Impact</p></div>
+                    <p>Hammering a Nail</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-03')">
+                    <div class="preview-media"><p>Case #03: Dual Events</p></div>
+                    <p>Car Horn + Rain</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-04')">
+                    <div class="preview-media"><p>Case #04: Ambient Noise</p></div>
+                    <p>Wind in the Forest</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-05')">
+                    <div class="preview-media"><p>Case #05: Water Splash</p></div>
+                    <p>Dog jumping in pool</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-06')">
+                    <div class="preview-media"><p>Case #06: Voice/Speech</p></div>
+                    <p>Person talking indoors</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-07')">
+                    <div class="preview-media"><p>Case #07: Mechanical Sound</p></div>
+                    <p>Clock ticking and chimes</p>
+                </div>
+                <div class="demo-preview-card" onclick="openModal('case-08')">
+                    <div class="preview-media"><p>Case #08: Material Friction</p></div>
+                    <p>Dragging a wooden box</p>
+                </div>
+                </div>
+        </section>
+
+        <hr>
+
+        <section id="results" class="results-section">
+            <h2>Quantitative and Ablation Results</h2>
+            [tables]
+            
+            <h3>Ablation Study: The Impact of CoT and Multi-Dimensional Rewards</h3>
+             <div class="demo-table-header">
+                 <div class="header-cell">Semantic Only</div>
+                 <div class="header-cell">Temporal Only</div>
+                 <div class="header-cell">Aesthetic Only </div>
+                 <div class="header-cell">Spatial Only</div>
+                 <div class="header-cell">Multi-dimensional</div>
+             </div>
+
+             <div class="demo-preview-grid demo-table-body">
+                 
+                 <div class="demo-preview-card" onclick="openModal('case-01')">
+                     <div class="preview-media"><p>Case #01</p></div>
+                     <p>Chopping and Sizzling</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-02')">
+                     <div class="preview-media"><p>Case #02</p></div>
+                     <p>Hammering a Nail</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-03')">
+                     <div class="preview-media"><p>Case #03</p></div>
+                     <p>Car Horn + Rain</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-06')">
+                     <div class="preview-media"><p>Case #06</p></div>
+                     <p>Person talking indoors</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-11')">
+                     <div class="preview-media"><p>Case #11</p></div>
+                     <p>Waves crashing ashore</p>
+                 </div>
+                 
+                 <div class="demo-preview-card" onclick="openModal('case-15')">
+                     <div class="preview-media"><p>Case #15</p></div>
+                     <p>Oil frying eggs</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-08')">
+                     <div class="preview-media"><p>Case #08</p></div>
+                     <p>Dragging a wooden box</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-04')">
+                     <div class="preview-media"><p>Case #04</p></div>
+                     <p>Wind in the Forest</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-12')">
+                     <div class="preview-media"><p>Case #12</p></div>
+                     <p>Clapping and cheering</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-20')">
+                     <div class="preview-media"><p>Case #20</p></div>
+                     <p>Thunder and lightning</p>
+                 </div>
+
+                 <div class="demo-preview-card" onclick="openModal('case-05')">
+                     <div class="preview-media"><p>Case #05</p></div>
+                     <p>Dog jumping in pool</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-07')">
+                     <div class="preview-media"><p>Case #07</p></div>
+                     <p>Clock ticking and chimes</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-09')">
+                     <div class="preview-media"><p>Case #09</p></div>
+                     <p>Movement in the dark</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-13')">
+                     <div class="preview-media"><p>Case #13</p></div>
+                     <p>Basketball dribbling</p>
+                 </div>
+                 <div class="demo-preview-card" onclick="openModal('case-14')">
+                     <div class="preview-media"><p>Case #14</p></div>
+                     <p>Motorcycle startup</p>
+                 </div>
+                 
+             </div>
+
+
+            
+        </section>
+
+    </div>
+
+    
+    <footer>
+        <div class="container">
+           
+        </div>
+    </footer>
+    
+
+    <script>
+        // Modal logic remains largely the same, but the DOM references and content are updated to the new structure
+        const modal = document.getElementById('demoModal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDescription = document.getElementById('modal-description');
+        
+        // Placeholder function to simulate loading case data
+        // ... 其他 JS 保持不变 ...
+
+        // Placeholder function to simulate loading case data
+        function loadCaseData(caseId) {
+            const cases = {
+                'case-01': {
+                    title: 'Complex Activity: Chopping and Sizzling',
+                    description: 'The video shows rapid chopping (high frequency events) followed by the immediate drop of food onto a hot pan (continuous sizzling). The Decomposed CoT system was crucial here for generating the overlapping, simultaneous sounds correctly—specifically, the Temporal CoT ensuring alignment and the Semantic CoT differentiating the two sounds. Baseline models typically merge this into a single, generic "cooking" sound.',
+                    
+                    // **新的数据结构：包含 URL, Preview URL, 和 Title**
+                    media: [
+                        {
+                            // Media 1: Ground Truth (Video tag)
+                            title: 'Ground Truth',
+                            url: 'media/case01/video_input.mp4', 
+                            preview: 'media/case01/video_input_preview.jpg', 
+                            type: 'video'
+                        },
+                        {
+                            // Media 2: PRISMAUDIO Output (Audio tag)
+                            title: 'PRISMAUDIO',
+                            url: 'media/case01/prismaudio_output.mp4',
+                            preview: null,
+                            type: 'video'
+                        },
+                        {
+                            // Media 3: Baseline 1 (Audio tag)
+                            title: 'ThinkSound',
+                            url: 'media/case01/baseline1.mp4',
+                            preview: null,
+                            type: 'video'
+                        },
+                        {
+                            // Media 4: Baseline 2 (Audio tag)
+                            title: 'MMAudio',
+                            url: 'media/case01/baseline2.mp4',
+                            preview: null,
+                            type: 'video'
+                        }
+                    ]
+                },
+                'case-02': {
+                    title: 'Precise Impact: Hammering a Nail',
+                    description: 'This case challenges the model\'s Temporal Synchrony and Aesthetic Quality. The Spatial CoT determines the closeness (loudness) and the Temporal CoT ensures the hammer strike sound aligns perfectly with the visual impact frame. Previous models often introduce a noticeable audio delay or a muffled, generic impact sound.',
+                    media: [
+                        { title: 'Ground Truth', url: 'media/case02/video_input.mp4', preview: 'media/case02/video_input_preview.jpg', type: 'video' },
+                        { title: 'PRISMAUDIO', url: 'media/case02/prismaudio_output.mp4', preview: null, type: 'video' },
+                        { title: 'ThinkSound', url: 'media/case02/baseline1.mp4', preview: null, type: 'video' },
+                        { title: 'MMAudio', url: 'media/case02/baseline2.mp4', preview: null, type: 'video' }
+                    ]
+                },
+                'case-03': {
+                    title: 'Dual Events: Car Horn + Rain',
+                    description: 'A classic multi-event scenario requiring Semantic CoT (identifying both car and rain) and Spatial CoT (positioning the horn in the foreground and the rain as background ambiance). PrismAudio\'s multi-dimensional reward system prevents the loud horn from drowning out the background rain, achieving a natural audio mix.',
+                    media: [
+                        { title: 'Ground Truth', url: 'media/case03/video_input.mp4', preview: 'media/case03/video_input_preview.jpg', type: 'video' },
+                        { title: 'PRISMAUDIO', url: 'media/case03/prismaudio_output.mp4', preview: null, type: 'video' },
+                        { title: 'ThinkSound', url: 'media/case03/baseline1.mp4', preview: null, type: 'video' },
+                        { title: 'MMAudio', url: 'media/case03/baseline2.mp4', preview: null, type: 'video' }
+                    ]
+                },
+                default: { 
+                    title: 'Case Data Not Found (ID: ' + caseId + ')', 
+                    description: 'Error loading case details. Please check the case ID. This is a placeholder for the Decomposed Chain-of-Thought analysis.', 
+                    media: [] 
+                }
+            };
+
+            // 辅助函数：根据数据生成媒体播放器 HTML
+            const createMediaHTML = (data) => {
+                let mediaTag = '';
+                const titleHTML = `<div style="font-family: 'Space Mono', monospace; color: var(--primary-color); margin-bottom: 10px;">${data.title}</div>`;
+
+                if (data.type === 'video') {
+                    // 视频标签
+                    mediaTag = `
+                        <video 
+                            controls 
+                            width="100%" 
+                            poster="${data.preview || ''}"
+                            src="${data.url}" 
+                            style="min-height: 200px; max-height: 400px; background-color: black; border-radius: 4px;">
+                            Your browser does not support the video tag.
+                        </video>`;
+                } else if (data.type === 'audio') {
+                    // 音频标签
+                    mediaTag = `
+                        <audio 
+                            controls 
+                            src="${data.url}" 
+                            style="width: 100%; margin-top: 5px;">
+                            Your browser does not support the audio element.
+                        </audio>`;
+                } else {
+                    return '<p style="color: red;">Invalid media type.</p>';
+                }
+
+                return titleHTML + mediaTag;
+            };
+
+
+            const data = cases[caseId] || cases['default'];
+
+            modalTitle.textContent = `Full Case Study: ${data.title}`;
+            modalDescription.textContent = data.description;
+            
+            // **循环更新四个媒体槽**
+            data.media.forEach((item, index) => {
+                const mediaId = `media-${index + 1}`;
+                const mediaContainer = document.getElementById(mediaId);
+                
+                if (mediaContainer) {
+                    // 动态生成并插入 HTML 结构
+                    mediaContainer.innerHTML = createMediaHTML(item);
+                    
+                    // 移除 min-height 占位符样式，让媒体元素本身控制高度
+                    mediaContainer.style.minHeight = 'auto'; 
+                    mediaContainer.style.display = 'block';
+
+                    // 确保播放器加载内容
+                    const player = mediaContainer.querySelector('video, audio');
+                    if (player) {
+                        player.load();
+                        // 确保视频容器有足够的空间
+                        if (item.type === 'video') {
+                            mediaContainer.style.padding = '15px'; // 增加内边距以美化
+                        }
+                    }
+                }
+            });
+        }
+
+
+        function openModal(caseId) {
+            loadCaseData(caseId); // Load content before displaying
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Close the modal if the user clicks anywhere outside of it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
