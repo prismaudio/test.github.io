@@ -15,15 +15,15 @@
             --light-text-color: #7A7A7A; /* Softer grey for subtext */
             --background-color: #FFFFFF; /* Clean White */
             --card-background: #FDFDFD; /* Almost white for subtle depth */
-            --border-radius: 16px; /* Increased for a rounder look */
-            --shadow-light: 0 5px 20px rgba(0, 0, 0, 0.07);
-            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --border-radius: 24px;
+            --shadow-light: 0 8px 25px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 35px rgba(74, 144, 226, 0.2); /* Glowing blue shadow */
             --light-tint: #F4F8FC; /* Very light blue tint */
             --border-color: #EAEAEA;
         }
 
         body {
-            font-family: 'Nunito', sans-serif; /* Switched to a rounder font */
+            font-family: 'Nunito', sans-serif;
             margin: 0;
             padding: 0;
             background-color: var(--background-color);
@@ -31,6 +31,7 @@
             line-height: 1.7;
             scroll-behavior: smooth;
             text-align: center;
+            overflow-x: hidden; /* Add this to prevent horizontal scroll from blobs */
         }
 
         .container {
@@ -41,8 +42,8 @@
         }
 
         h1 {
-            font-family: 'Montserrat', sans-serif; /* Switched to a modern, rounded heading font */
-            font-size: 5.5em; /* Adjusted size for the new font */
+            font-family: 'Montserrat', sans-serif;
+            font-size: 5.5em;
             color: var(--primary-color);
             font-weight: 700;
             margin: 0;
@@ -51,7 +52,7 @@
         }
 
         h2 {
-            font-family: 'Montserrat', sans-serif; /* Consistent heading font */
+            font-family: 'Montserrat', sans-serif;
             font-size: 2.5em;
             color: var(--text-color);
             font-weight: 700;
@@ -68,14 +69,14 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
+            width: 100px;
+            height: 5px;
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            border-radius: 2px;
+            border-radius: 5px;
         }
 
         h3 {
-            font-family: 'Montserrat', sans-serif; /* Consistent heading font */
+            font-family: 'Montserrat', sans-serif;
             font-size: 1.6em;
             color: var(--primary-color);
             font-weight: 700;
@@ -95,22 +96,70 @@
             margin-right: auto;
         }
 
+        /* --- START: Fancy Header with Wave and Blobs (UPDATED) --- */
         header {
             text-align: center;
-            padding: 80px 0;
+            padding: 80px 0 120px 0; /* Increased bottom padding for wave */
             background-color: var(--light-tint);
+            position: relative;
+            /* overflow: hidden;  <-- REMOVED THIS LINE TO MAKE BLOBS VISIBLE */
         }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px; /* Height of the wave */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23FFFFFF' fill-opacity='1' d='M0,192L48,176C96,160,192,128,288,133.3C384,139,480,181,576,186.7C672,192,768,160,864,144C960,128,1056,128,1152,149.3C1248,171,1344,213,1392,234.7L1440,256L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: bottom;
+            z-index: 10;
+        }
+
+        .decorative-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px); /* Increased blur slightly */
+            z-index: 1;
+        }
+
+        .blob1 {
+            width: 300px;
+            height: 300px;
+            /* UPDATED: Increased opacity from 0.15 to 0.25 */
+            background-color: rgba(74, 144, 226, 0.25); /* Primary Color */
+            top: -50px;
+            left: -100px;
+        }
+
+        .blob2 {
+            width: 250px;
+            height: 250px;
+            /* UPDATED: Increased opacity from 0.1 to 0.2 */
+            background-color: rgba(80, 227, 194, 0.2); /* Secondary Color */
+            bottom: -80px;
+            right: -80px;
+        }
+
+        header .container {
+             position: relative;
+             z-index: 5;
+        }
+        /* --- END: Fancy Header --- */
 
         p.abstract-text {
             max-width: 1220px;
-            margin: 30px calc(50% - 610px); /* 610 = 1220 / 2 */
+            margin: 30px auto;
             padding: 40px;
             font-size: 1.2em;
             color: var(--text-color);
             background-color: var(--card-background);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-light);
-            border: 1px solid var(--border-color);
+            border: none;
         }
 
         #advantage img {
@@ -129,6 +178,82 @@
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
             margin-top: 40px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+            background-color: var(--card-background);
+            border: none;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+            text-align: left;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td:first-child, th:first-child {
+            text-align: left;
+            font-weight: 700;
+        }
+
+        thead th {
+            background-color: var(--light-tint);
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--light-tint);
+        }
+
+        .our-row {
+            background-color: #e7f5ff !important;
+            font-weight: 700;
+        }
+
+        .ablation-row-data {
+            background-color: #f1f3f5 !important;
+        }
+
+        caption {
+            caption-side: top;
+            text-align: center;
+            padding: 1rem 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            background-color: var(--light-tint);
+            border-bottom: 1px solid var(--border-color);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .analysis-points {
+            background: var(--light-tint);
+            border-left: 4px solid var(--secondary-color);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem auto 2.5rem auto;
+            border-radius: 8px;
+            max-width: 900px;
+            text-align: left;
+            font-size: 1.05em;
         }
 
         .demo-preview-card {
@@ -179,12 +304,17 @@
             margin-top: auto;
         }
 
+        /* --- START: Fancy Angled Section (UPDATED) --- */
         .results-section {
-            padding: 40px;
+            padding: 120px 40px 40px 40px; /* Increased top padding for angled shape */
             background-color: var(--light-tint);
             border-radius: var(--border-radius);
             margin-top: 60px;
+            position: relative;
+            /* UPDATED: Changed from 5% to a more noticeable 80px */
+            clip-path: polygon(0 80px, 100% 0, 100% 100%, 0% 100%);
         }
+        /* --- END: Fancy Angled Section --- */
         
         .ablation-header-grid {
             display: grid;
@@ -396,22 +526,21 @@
             color: var(--text-color);
             font-size: 1.05em;
         }
-
-        /* --- START: MIGRATED CAROUSEL STYLES --- */
+        
         .carousel-container {
             width: 100%;
-            max-width: 1200px; /* 新增：限制最大寬度 */
-            margin: 0 auto;     /* 新增：使整個容器水平置中 */
-            padding: 40px 20px; /* 修改：左右增加 20px 的內距，避免貼邊 */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
             user-select: none;
-            box-sizing: border-box; /* 新增：確保 padding 不會影響總寬度 */
+            box-sizing: border-box;
         }
 
         #carousel {
             display: flex;
             padding: 20px calc(50% - 180px);
             overflow: hidden;
-            position: relative; /* 新增：修正 JS 計算位置的基準點 */
+            position: relative;
         }
 
         .video-card {
@@ -420,9 +549,10 @@
             margin: 0 20px;
             overflow: hidden;
             position: relative;
-            border-radius: 10px;
+            border-radius: 20px;
             border: 5px solid rgba(68, 102, 170, 0.3);
             transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--shadow-light);
         }
 
         .video-card video {
@@ -436,7 +566,6 @@
             cursor: grabbing;
             scroll-behavior: auto;
         }
-        /* --- END: MIGRATED CAROUSEL STYLES --- */
 
 
         @media (max-width: 992px) {
@@ -486,6 +615,9 @@
 <body>
 
     <header>
+        <div class="decorative-blob blob1"></div>
+        <div class="decorative-blob blob2"></div>
+        
         <div class="container">
             <h1>PRISMAUDIO</h1>
             <div class="subtitle">
@@ -603,6 +735,57 @@
 
         <hr>
 
+        <hr>
+        <section id="quantitative-results">
+            <h2>Quantitative Results</h2>
+            
+            <h3>In-domain Evaluation on VGGSound</h3>
+            <div class="table-container">
+                <table>
+                    <caption>Objective and Subjective evaluations on the <strong>in-domain</strong> VGGSound test set.</caption>
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Method</th><th rowspan="2">Params</th><th>Semantic</th><th>Temporal</th><th colspan="4">Aesthetic Quality</th><th colspan="2">Spatial Accuracy</th><th colspan="2">Distribution</th><th colspan="2">Subjective</th><th rowspan="2">Time (s)</th>
+                        </tr>
+                        <tr>
+                            <th>CLAP↑</th><th>DeSync↓</th><th>PQ↑</th><th>PC↓</th><th>CE↑</th><th>CU↑</th><th>GCC↓</th><th>CRW↓</th><th>FD↓</th><th>KL↓</th><th>MOS-Q↑</th><th>MOS-C↑</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>GT</td><td>-</td><td>0.46</td><td>0.55</td><td>6.30</td><td>3.85</td><td>4.40</td><td>5.65</td><td>-</td><td>-</td><td>-</td><td>-</td><td>4.58±0.18</td><td>4.65±0.15</td><td>-</td></tr>
+                        <tr><td>Frieren†</td><td>159M</td><td>0.32</td><td>0.85</td><td>5.90</td><td>3.50</td><td>3.57</td><td>5.35</td><td>-</td><td>-</td><td>1.34</td><td>2.86</td><td>3.45±0.75</td><td>3.51±0.80</td><td>-</td></tr>
+                        <tr><td>V2A-Mapper†</td><td>229M</td><td>0.31</td><td>1.23</td><td>6.26</td><td>3.54</td><td>4.12</td><td>5.63</td><td>-</td><td>-</td><td><strong>0.90</strong></td><td>2.49</td><td>3.38±0.82</td><td>3.44±0.88</td><td>-</td></tr>
+                        <tr><td>AudioX</td><td>1.1B</td><td>0.41</td><td>1.24</td><td>5.94</td><td>3.43</td><td>3.86</td><td>5.44</td><td>7.22</td><td>19.25</td><td>1.51</td><td>1.80</td><td>3.61±0.75</td><td>3.65±0.72</td><td>7.52</td></tr>
+                        <tr><td>HunyuanVideo-Foley</td><td>5.31B</td><td>0.42</td><td>0.55</td><td>5.85</td><td>3.26</td><td>3.92</td><td>5.26</td><td>-</td><td>-</td><td>2.26</td><td>1.73</td><td>3.88±0.55</td><td>3.96±0.52</td><td>10.63</td></tr>
+                        <tr><td>MMAudio</td><td>1.03B</td><td>0.40</td><td>0.46</td><td>5.94</td><td>3.51</td><td>3.88</td><td>5.28</td><td>-</td><td>-</td><td>2.17</td><td>1.32</td><td>3.95±0.51</td><td>4.03±0.58</td><td>1.30</td></tr>
+                        <tr><td>ThinkSound</td><td>1.3B</td><td>0.43</td><td>0.55</td><td>6.15</td><td>3.53</td><td>3.95</td><td>5.48</td><td>4.65</td><td>13.47</td><td>1.17</td><td>1.35</td><td>4.05±0.55</td><td>4.18±0.51</td><td>1.07</td></tr>
+                        <tr class="ablation-row-data"><td>PrismAudio w/o CoT-RL</td><td>518M</td><td>0.42</td><td>0.51</td><td>6.17</td><td>3.32</td><td>3.94</td><td>5.48</td><td>4.06</td><td>10.29</td><td>1.14</td><td>1.43</td><td>4.02±0.48</td><td>4.11±0.42</td><td>0.63</td></tr>
+                        <tr class="our-row"><td>PrismAudio (Ours)</td><td>518M</td><td><strong>0.47</strong></td><td><strong>0.41</strong></td><td><strong>6.38</strong></td><td><strong>3.24</strong></td><td><strong>4.29</strong></td><td><strong>5.68</strong></td><td><strong>3.77</strong></td><td><strong>7.72</strong></td><td>1.08</td><td><strong>1.23</strong></td><td><strong>4.21±0.35</strong></td><td><strong>4.22±0.29</strong></td><td>0.63</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Out-of-Domain Evaluation on AudioCanvas</h3>
+            <div class="table-container">
+                <table>
+                    <caption>Objective and Subjective evaluations on the <strong>out-of-domain</strong> AudioCanvas benchmark.</caption>
+                    <thead>
+                    <tr><th rowspan="2">Method</th><th>Semantic</th><th>Temporal</th><th colspan="4">Aesthetic Quality</th><th colspan="2">Spatial Accuracy</th><th colspan="2">Distribution</th><th colspan="2">Subjective</th></tr>
+                        <tr><th>CLAP↑</th><th>DeSync↓</th><th>PQ↑</th><th>PC↓</th><th>CE↑</th><th>CU↑</th><th>GCC↓</th><th>CRW↓</th><th>FD↓</th><th>KL↓</th><th>MOS-Q↑</th><th>MOS-C↑</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>GT</td><td>0.48</td><td>0.40</td><td>6.47</td><td>3.16</td><td>4.02</td><td>5.99</td><td>-</td><td>-</td><td>-</td><td>-</td><td>4.65±0.23</td><td>4.72±0.20</td></tr>
+                        <tr><td>HunyuanVideo-Foley</td><td>0.44</td><td>0.47</td><td>6.43</td><td>3.25</td><td>4.04</td><td>5.88</td><td>-</td><td>-</td><td>2.04</td><td>2.07</td><td>3.75±0.52</td><td>3.71±0.58</td></tr>
+                        <tr><td>MMAudio</td><td>0.46</td><td>0.43</td><td>6.30</td><td>3.23</td><td>3.97</td><td>5.77</td><td>-</td><td>-</td><td>3.59</td><td>1.87</td><td>3.88±0.45</td><td>3.87±0.41</td></tr>
+                        <tr><td>ThinkSound</td><td>0.48</td><td>0.80</td><td>6.48</td><td>3.50</td><td>4.10</td><td>5.94</td><td>4.43</td><td>22.82</td><td>1.95</td><td>2.54</td><td>3.79±0.58</td><td>3.80±0.54</td></tr>
+                        <tr class="ablation-row-data"><td>PrismAudio w/o CoT-RL</td><td>0.42</td><td>0.44</td><td>6.45</td><td>3.22</td><td>3.81</td><td>5.87</td><td>4.11</td><td>15.30</td><td>2.10</td><td>2.17</td><td>3.91±0.35</td><td>3.85±0.31</td></tr>
+                        <tr class="our-row"><td>PrismAudio (Ours)</td><td><strong>0.52</strong></td><td><strong>0.36</strong></td><td><strong>6.68</strong></td><td><strong>2.82</strong></td><td><strong>4.26</strong></td><td><strong>6.15</strong></td><td><strong>3.50</strong></td><td><strong>12.87</strong></td><td><strong>1.92</strong></td><td><strong>1.53</strong></td><td><strong>4.12±0.28</strong></td><td><strong>4.01±0.25</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
         <section id="results" class="results-section">
             <h2>Ablation Study</h2>
             <p style="text-align: center; color: var(--light-text-color); font-style: italic; max-width: 700px; margin: -10px auto 40px auto;">Examining the impact of individual Chain-of-Thought modules and the power of their multi-dimensional combination.</p>
@@ -650,9 +833,7 @@
     </div>
 
     <footer>
-        <div class="container">
-           <p>&copy; 2025 PRISMAUDIO Project. All Rights Reserved.</p>
-        </div>
+        
     </footer>
     
     <script>
